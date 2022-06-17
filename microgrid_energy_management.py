@@ -30,7 +30,7 @@ class wind_turbine:
         self.rated_speed = rated_speed
     
     def power_out(self, wind_speed):
-        if self.cut_off >= wind_speed >= self.cut_in:
+        if self.cut_off <= wind_speed <= self.cut_in:
             return 0
         return self.rated_power * ((wind_speed - self.cut_in) / (self.rated_speed - self.cut_in))
 
