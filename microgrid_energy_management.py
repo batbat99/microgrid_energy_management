@@ -21,6 +21,30 @@ class pv_system:
         power = self.rated_capacity * self.pv_derating_factor * (radiation / self.stc_radiation) * (1 + self.ap * (self.calculate_temp(ambient_temp, radiation) - self.stc_temp))
         return power
 
+class wind_turbine:
+
+    def __init__(self, cut_in, cut_off, rated_power, rated_speed):
+        self.cut_in = cut_in
+        self.cut_off = cut_off
+        self.rated_power = rated_power
+        self.rated_speed = rated_speed
+    
+    def power_out(self, wind_speed):
+        if self.cut_off >= wind_speed >= self.cut_in:
+            return 0
+        return self.rated_power * ((wind_speed - self.cut_in) / (self.rated_speed - self.cut_in))
+
+class diesel_engine:
+
+    def __init__(self, min_power, max_power):
+        self.min_power = min_power
+        self.max_power = max_power
+
+    def power_power(required_power):
+        pass
+
+
+
 class battery:
 
     def __init__(self, capacity, init_charge=0):
