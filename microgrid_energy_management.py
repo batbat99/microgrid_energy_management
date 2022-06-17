@@ -1,16 +1,16 @@
 class pv_system:
 
     def __init__(self, rated_capacity, pv_derating_factor, noct_ops_temp, noct_temp, ap, noct_radiation=0.8, stc_radiation=1, stc_temp=25):
-        rated_capacity = rated_capacity
-        pv_derating_factor = pv_derating_factor
-        stc_radiation = stc_radiation
-        noct_temp = noct_temp
-        noct_radiation = noct_radiation
-        normal_operation_temp = noct_ops_temp
-        noct_temp = noct_temp
-        ap = ap
+        self.rated_capacity = rated_capacity
+        self.pv_derating_factor = pv_derating_factor
+        self.stc_radiation = stc_radiation
+        self.noct_temp = noct_temp
+        self.noct_radiation = noct_radiation
+        self.normal_operation_temp = noct_ops_temp
+        self.noct_temp = noct_temp
+        self.ap = ap
         
-        stc_temp = stc_temp
+        self.stc_temp = stc_temp
 
     
     def calculate_temp(self, ambient_temp, radiation):
