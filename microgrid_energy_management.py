@@ -40,30 +40,35 @@ class diesel_engine:
         self.min_power = min_power
         self.max_power = max_power
 
-    def power_power(required_power):
+    def power_out(required_power):
         pass
 
 
 
 class battery:
 
-    def __init__(self, capacity, init_charge=0):
-        capacity = self.capacity
-        current_charge = init_charge
+    def __init__(self, capacity, efficiency, soc_min, soc_max, es_min, es_max, init_state=0):
+        self.capacity = capacity
+        self.soc = init_state
+        self.efficiency = efficiency
+        self.soc_min = soc_min
+        self.soc_max = soc_max
+        self.es_min = es_min
+        self.es_max = es_max
     
-    def charge(self, surplus):
-        if self.current_charge + surplus > self.capacity:
-            self.current_charge = self.capacity
-        else: self.current_charge += surplus
-    
-    def discharge(self, load):
-        self.current_charge -= load
-    
-    def available(self):
-        if self.current_charge > 0.2 * self.capacity:
-            return self.current_charge - 0.2 * self.capacity
-        else:
-            return 0
+    def power_exchange(self, est):
+        es = est
+        if abs(est) > self.es_max:
+            es = self.es_max
+        elif abs(est) < self.es_min:
+            pass
+        soct1 = self.soc - (self.efficiency * es) / self.capacity
+        if not self.soc_min > soct1 > self.soc_max:
+            self.soc = soct1
+            if est > 0 : return es
+        return 0
+
+        
 
 
 
