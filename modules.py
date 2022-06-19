@@ -63,7 +63,7 @@ class battery:
         elif abs(est) < self.es_min:
             pass
         soct1 = self.soc - (self.efficiency * es) / self.capacity
-        if not self.soc_min > soct1 > self.soc_max:
+        if self.soc_min < soct1 < self.soc_max:
             self.soc = soct1
             if est > 0 : return es
         return 0
