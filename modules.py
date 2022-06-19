@@ -40,8 +40,10 @@ class diesel_engine:
         self.min_power = min_power
         self.max_power = max_power
 
-    def power_out(required_power):
-        pass
+    def power_out(self, required_power):
+        if required_power < self.min_power: return self.min_power
+        elif required_power > self.max_power: return self.max_power
+        return required_power
 
 
 
