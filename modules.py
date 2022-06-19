@@ -9,17 +9,19 @@ class pv_system:
         self.normal_operation_temp = noct_ops_temp
         self.noct_temp = noct_temp
         self.ap = ap
-        
+
         self.stc_temp = stc_temp
 
-    
     def calculate_temp(self, ambient_temp, radiation):
-        temp = ambient_temp * (self.normal_operation_temp - self.noct_temp) * (radiation / self.noct_radiation)
+        temp = ambient_temp * (self.normal_operation_temp -
+                               self.noct_temp) * (radiation / self.noct_radiation)
         return temp
 
     def power_out(self, ambient_temp, radiation):
-        power = self.rated_capacity * self.pv_derating_factor * (radiation / self.stc_radiation) * (1 + self.ap * (self.calculate_temp(ambient_temp, radiation) - self.stc_temp))
+        power = self.rated_capacity * self.pv_derating_factor * (radiation / self.stc_radiation) * (
+            1 + self.ap * (self.calculate_temp(ambient_temp, radiation) - self.stc_temp))
         return power
+
 
 class wind_turbine:
 
@@ -28,11 +30,12 @@ class wind_turbine:
         self.cut_off = cut_off
         self.rated_power = rated_power
         self.rated_speed = rated_speed
-    
+
     def power_out(self, wind_speed):
         if self.cut_off <= wind_speed <= self.cut_in:
             return 0
         return self.rated_power * ((wind_speed - self.cut_in) / (self.rated_speed - self.cut_in))
+
 
 class diesel_engine:
 
@@ -41,10 +44,11 @@ class diesel_engine:
         self.max_power = max_power
 
     def power_out(self, required_power):
-        if required_power < self.min_power: return self.min_power
-        elif required_power > self.max_power: return self.max_power
+        if required_power < self.min_power:
+            return self.min_power
+        elif required_power > self.max_power:
+            return self.max_power
         return required_power
-
 
 
 class battery:
@@ -57,7 +61,7 @@ class battery:
         self.soc_max = soc_max
         self.es_min = es_min
         self.es_max = es_max
-    
+
     def power_exchange(self, est):
         es = est
         if abs(est) > self.es_max:
@@ -67,11 +71,9 @@ class battery:
         soct1 = self.soc - (self.efficiency * es) / self.capacity
         if self.soc_min < soct1 < self.soc_max:
             self.soc = soct1
-            if est > 0 : return es
+            if est > 0:
+                return es
         return 0
-
-        
-
 
 
 if __name__ == "__main__":
