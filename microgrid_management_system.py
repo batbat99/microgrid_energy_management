@@ -20,7 +20,7 @@ class microgrid_management_system:
                 break
         return power_diff, cbp_activation
 
-    def drive(self, loads: dict, ambient_temp, radiation, wind_speed, grid: bool, diesel: bool):
+    def drive(self, loads: dict, ambient_temp, radiation, wind_speed, grid: bool):
         cbp_activation = {key: 1 for key in self.cbp.keys()}
         power_bus = {"pv": 0, "wind": 0, "diesel": 0, "battery": 0, "grid": 0}
         total_load = sum(loads.values())
@@ -40,10 +40,9 @@ class microgrid_management_system:
             excess = power_diff - power_exchanged
             power_bus["grid"] = excess
         elif not grid:
-            if diesel:
-                diesel_power = self.diesel_engine.power_out(power_diff)
-                power_bus["diesel"] = diesel_power
-                power_diff -= diesel_power
+            diesel_power = self.diesel_engine.power_out(power_diff)
+            power_bus["diesel"] = diesel_power
+            power_diff -= diesel_power
             if power_diff > 0:
                 power_diff, cbp_activation = self._breaker_action(
                     power_diff, loads)
@@ -61,11 +60,12 @@ if __name__ == "__main__":
     pv = pv_system(rated_capacity=8, pv_derating_factor=0.6, noct_ops_temp=45,
                    noct_temp=20, ap=0.48, noct_radiation=0.8, stc_radiation=1, stc_temp=25)
     wt = wind_turbine(cut_in=3, cut_off=25, rated_power=70, rated_speed=11)
-    de = diesel_engine(min_power=80, max_power=300)
+    de = diesel_engine(min_power=80, max_power=300,
+                       efficiency=0.4, fuel_tank=200)
     b = battery(capacity=15, efficiency=0.9, soc_min=3,
                 soc_max=13.5, es_min=0, es_max=3, init_state=0)
     circuitb = {1: 1, 2: 2, 3: 3, 4: 4}
     mms = microgrid_management_system(pv, wt, de, b, circuitb)
-    loads = {1: 10, 2: 30, 3: 90, 4: 110}
-    print(mms.drive(loads, 30, radiation=0,
-          wind_speed=14, grid=False, diesel=False))
+    loads = {1: 10, 2: 100, 3: 120, 4: 110}
+    print(mms.drive(loads, 30, radiation=1.369,
+          wind_speed=10, grid=False))

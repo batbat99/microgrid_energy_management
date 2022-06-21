@@ -56,9 +56,13 @@ class diesel_engine:
                 power = self.min_power
             elif required_power > self.max_power:
                 power = self.max_power
+            if available < power:
+                power = available
             available -= power
             self.fuel_tank -= available / (10 * self.efficiency)
             return power
+        else:
+            return 0
 
 
 class battery:
