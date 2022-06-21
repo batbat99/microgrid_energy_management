@@ -1,6 +1,6 @@
 class pv_system:
 
-    def __init__(self, rated_capacity, pv_derating_factor, noct_ops_temp, noct_temp, ap, noct_radiation=0.8, stc_radiation=1, stc_temp=25):
+    def __init__(self, rated_capacity, pv_derating_factor, noct_ops_temp, noct_temp, ap, noct_radiation=0.8, stc_radiation=1, stc_temp=25, efficiency=0.2):
         self.rated_capacity = rated_capacity
         self.pv_derating_factor = pv_derating_factor
         self.stc_radiation = stc_radiation
@@ -9,12 +9,12 @@ class pv_system:
         self.normal_operation_temp = noct_ops_temp
         self.noct_temp = noct_temp
         self.ap = ap
-
+        self.efficiency = efficiency
         self.stc_temp = stc_temp
 
     def calculate_temp(self, ambient_temp, radiation):
-        temp = ambient_temp * (self.normal_operation_temp -
-                               self.noct_temp) * (radiation / self.noct_radiation)
+        temp = ambient_temp + (self.normal_operation_temp -
+                               self.noct_temp) * (radiation / self.noct_radiation) * (1 - self.efficiency / 0.9)
         return temp
 
     def power_out(self, ambient_temp, radiation):
@@ -65,14 +65,14 @@ class battery:
     def power_exchange(self, est):
         es = est
         if abs(est) > self.es_max:
-            es = self.es_max
+            es = self.es_max * es / abs(es)
         elif abs(est) < self.es_min:
             pass
         soct1 = self.soc - (self.efficiency * es) / self.capacity
-        if self.soc_min < soct1 < self.soc_max:
-            self.soc = soct1
-            if est > 0:
-                return es
+        if not ((self.soc_min > soct1 and es > 0) or (soct1 > self.soc_max and es < 0)):
+            self.soc -= soct1
+
+            return es
         return 0
 
 
