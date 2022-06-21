@@ -45,12 +45,13 @@ class microgrid_management_system:
                 power_bus["diesel"] = diesel_power
                 power_diff -= diesel_power
             if power_diff > 0:
-                power_exchanged = self.battery.power_exchange(power_diff)
-                power_bus["battery"] = power_exchanged
-                power_diff -= power_exchanged
-                if power_diff > 0:
-                    power_diff, cbp_activation = self._breaker_action(
-                        power_diff, loads)
+                power_diff, cbp_activation = self._breaker_action(
+                    power_diff, loads)
+            power_exchanged = self.battery.power_exchange(power_diff)
+            power_bus["battery"] = power_exchanged
+            power_diff -= power_exchanged
+            power_bus["grid"] = power_diff
+
         else:
             power_bus["grid"] = power_diff
         return cbp_activation, power_bus
@@ -65,6 +66,6 @@ if __name__ == "__main__":
                 soc_max=13.5, es_min=0, es_max=3, init_state=0)
     circuitb = {1: 1, 2: 2, 3: 3, 4: 4}
     mms = microgrid_management_system(pv, wt, de, b, circuitb)
-    loads = {1: 10, 2: 30, 3: 40, 4: 40}
-    print(mms.drive(loads, 30, radiation=1.369,
-          wind_speed=14, grid=False, diesel=True))
+    loads = {1: 10, 2: 30, 3: 90, 4: 110}
+    print(mms.drive(loads, 30, radiation=0,
+          wind_speed=14, grid=False, diesel=False))
