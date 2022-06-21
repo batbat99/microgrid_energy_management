@@ -1,3 +1,6 @@
+from matplotlib.style import available
+
+
 class pv_system:
 
     def __init__(self, rated_capacity, pv_derating_factor, noct_ops_temp, noct_temp, ap, noct_radiation=0.8, stc_radiation=1, stc_temp=25, efficiency=0.2):
@@ -39,16 +42,23 @@ class wind_turbine:
 
 class diesel_engine:
 
-    def __init__(self, min_power, max_power):
+    def __init__(self, min_power, max_power, efficiency, fuel_tank):
         self.min_power = min_power
         self.max_power = max_power
+        self.efficiency = efficiency
+        self.fuel_tank = fuel_tank
 
     def power_out(self, required_power):
-        if required_power < self.min_power:
-            return self.min_power
-        elif required_power > self.max_power:
-            return self.max_power
-        return required_power
+        available = self.fuel_tank * 10 * self.efficiency
+        if available >= self.min_power:
+            power = required_power
+            if required_power < self.min_power:
+                power = self.min_power
+            elif required_power > self.max_power:
+                power = self.max_power
+            available -= power
+            self.fuel_tank -= available / (10 * self.efficiency)
+            return power
 
 
 class battery:
